@@ -1,4 +1,4 @@
-# Example project repository
+# KernelBot
 
 <!-- toc -->
 

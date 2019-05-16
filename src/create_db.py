@@ -20,7 +20,7 @@ Base = declarative_base()
 
 
 class user_input(Base):
-    """ Defines the data model for the table tweet_score"""
+    """ Defines the data model for the table user_input"""
     __tablename__ = 'user_input'
     id = Column(String(100), primary_key=True, unique=True, nullable=False)
     age = Column(Integer, unique=False, nullable=False)
@@ -41,10 +41,9 @@ class user_input(Base):
 
 
 def create_db_sql(args):
-    """Creates a SQLITE database (based on configuration) with User inputs table
-    Returns: None
+    """Creates a SQLITE database (based on configuration) with User inputs table.
+    Returns: Optional user argument with sql engine
     """
-    #dbconfig = config.DB_CONFIG
     try:
 
         engine = create_engine(args.engine_string)
@@ -59,6 +58,12 @@ def create_db_sql(args):
 
 
 def create_db_rds(args):
+    """
+    Creates a RDS database (based on configuration) with User inputs table.
+
+    :param args: User input with username and password credentials
+    :return:
+    """
     try:
         with open(config.RDS_CONFIG, "r") as f:
             rds_config = yaml.load(f)
@@ -88,7 +93,6 @@ def create_db_rds(args):
 2
 if __name__ == '__main__':
     db_sql_path = config.SQLALCHEMY_DATABASE_URI
-    print(db_sql_path)
 
     parser = argparse.ArgumentParser(description="Run components")
     subparsers = parser.add_subparsers()

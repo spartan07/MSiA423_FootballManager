@@ -96,12 +96,10 @@ The requirements.txt file has the list of all packages required to run the appli
 
 *With conda*
 
-```python
-conda create --name football_manager python=3.7
+```commandline
+conda create -n football_manager python=3.7
 conda activate football_manager
 pip install -r requirements.txt
-conda activate football_manager
-
 ```
 
 In order to use boto3 and access s3 buckets awsclient needs to be configured.
@@ -112,22 +110,22 @@ Enter aws config in command line and input secretid and other information
 
 Load data from a public s3 bucket(default) to bucket of your choice.
 From the root directory run
-```python
+```commandline
 python run.py load --s3bucket <bucket_name> --s3folder <folder_name>
 ```
 The default s3 configs are provide in the config/s3_config.yml YAML file. Edit the DEST_S3_BUCKET and DEST_S3_FOLDER in the yaml file to run
-```python
+```commandline
 python run.py load
 ```
 
 **Initialize database**
 
 To create a sqldb in the local directory, from the root directory run
-```python
+```commandline
 python run.py create_sqldb --engine_string <engine_string for connection>   
 ```
 Default value of engine string is provided in the config.py file. To use the default configuration setting run
-```python
+```commandline
 python run.py create_sqldb
 ```
 
@@ -136,8 +134,8 @@ To create a database in **RDS** run
 The default rds configs are provide in the config/rds_config.yml YAML file. 
 Edit host, port and db name in the yaml file and run
 
-```python
-python run.py create_rdsdb --user <username> --password <password>
+```commandline
+python run.py create_rdsdb --user<username> --password<password>
 ```
 username and password are mandatory arguments to be passed
 

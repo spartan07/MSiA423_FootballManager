@@ -14,7 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 def load_s3(args):
-
+    """
+    Copies raw dataset from public S3 bucket to user-defined bucket and folder
+    :param args: User arguments for public s3 path, public s3 folder, destination s3 bucket, destination s3 folder
+    :return: None
+    """
     object_name = args.s3folder+"/EA_FIFA_19.csv"
     s3 = boto3.resource('s3')
     copy_source = {

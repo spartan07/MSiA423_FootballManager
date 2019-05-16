@@ -1,5 +1,7 @@
 # Football Manager
 
+Developer : Arpan Venugopal     
+QA : Dhansree Suraj
 <!-- toc -->
 
 - [Project Charter](#project-charter)
@@ -80,13 +82,11 @@ Provide estimated market value of a football player based on the required player
 8. Application.Deployment (8)
 9. Application.BasicFrontEnd (4)
 10. Application.Create test cases (2)
-9. Application.Testing (8)
+11. Application.Testing (8)
 
 ## Icebox
 
 1. Application.AdvancedFrontEnd
-
-QA : Dhansree Suraj who is working on "Whos-the-Boss" app.
 
 ##Running the Application
 
@@ -102,9 +102,9 @@ conda activate football_manager
 pip install -r requirements.txt
 ```
 
-In order to use boto3 and access s3 buckets awsclient needs to be configured.
+In order to use boto3 and access s3 buckets, awsclient needs to be configured.
 
-Enter aws config in command line and input secretid and other information
+Enter aws config in command line and input secretid and other information and make sure ~/.aws/config and ~/.aws/credentials exist
 
 **Loading data to S3**
 
@@ -135,9 +135,9 @@ The default rds configs are provide in the config/rds_config.yml YAML file.
 Edit host, port and db name in the yaml file and run
 
 ```commandline
-python run.py create_rdsdb --user<username> --password<password>
+python run.py create_rdsdb --user <username> --password <password>
 ```
-username and password are mandatory arguments to be passed
+Please note that the username and password are mandatory arguments to be passed to set up an rds db. 
 
 
 

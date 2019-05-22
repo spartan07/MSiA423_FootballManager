@@ -1,11 +1,14 @@
 # Football Manager
 
+Developer : Arpan Venugopal     
+QA : Dhansree Suraj
 <!-- toc -->
 
 - [Project Charter](#project-charter)
 - [Planning](#planning) 
 - [Backlog](#backlog)
 - [Icebox](#backlog)
+- [Running the Application](#backlog)
 
 <!-- tocstop -->
 
@@ -79,11 +82,62 @@ Provide estimated market value of a football player based on the required player
 8. Application.Deployment (8)
 9. Application.BasicFrontEnd (4)
 10. Application.Create test cases (2)
-9. Application.Testing (8)
+11. Application.Testing (8)
 
 ## Icebox
 
 1. Application.AdvancedFrontEnd
+
+##Running the Application
+
+**Setup environment** :
+
+The requirements.txt file has the list of all packages required to run the application
+
+*With conda*
+
+```commandline
+conda create -n football_manager python=3.7
+conda activate football_manager
+pip install -r requirements.txt
+```
+
+In order to use boto3 and access s3 buckets, awsclient needs to be configured.
+
+Enter aws config in command line and input secretid and other information and make sure ~/.aws/config and ~/.aws/credentials exist
+
+**Loading data to S3**
+
+Load data from a public s3 bucket(default) to bucket of your choice.
+From the root directory run
+```commandline
+python run.py load 
+```
+The default s3 configs are provide in the config/config.yml YAML file. 
+Edit the DEST_S3_BUCKET and DEST_S3_FOLDER to desired S3 paths and folder name to run
+
+
+**Initialize database**
+
+To create a sqldb in the local directory, from the root directory run
+```commandline
+python run.py create_sqldb --engine_string <engine_string for connection>   
+```
+Default value of engine string is provided in the config/config.yml YAML file. To use the default configuration setting run
+```commandline
+python run.py create_sqldb
+```
+
+To create a database in **RDS** run
+
+The default rds configs are provide in the config/rds_config.yml YAML file. 
+Edit host, port and db name in the yaml file and run
+
+```commandline
+python run.py create_rdsdb --user <username> --password <password>
+```
+Please note that the username and password are mandatory arguments to be passed to set up an rds db. 
+
 
 
 

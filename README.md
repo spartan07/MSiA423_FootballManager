@@ -111,12 +111,11 @@ Enter aws config in command line and input secretid and other information and ma
 Load data from a public s3 bucket(default) to bucket of your choice.
 From the root directory run
 ```commandline
-python run.py load --s3bucket <bucket_name> --s3folder <folder_name>
+python run.py load 
 ```
-The default s3 configs are provide in the config/s3_config.yml YAML file. Edit the DEST_S3_BUCKET and DEST_S3_FOLDER in the yaml file to run
-```commandline
-python run.py load
-```
+The default s3 configs are provide in the config/config.yml YAML file. 
+Edit the DEST_S3_BUCKET and DEST_S3_FOLDER to desired S3 paths and folder name to run
+
 
 **Initialize database**
 
@@ -124,7 +123,7 @@ To create a sqldb in the local directory, from the root directory run
 ```commandline
 python run.py create_sqldb --engine_string <engine_string for connection>   
 ```
-Default value of engine string is provided in the config.py file. To use the default configuration setting run
+Default value of engine string is provided in the config/config.yml YAML file. To use the default configuration setting run
 ```commandline
 python run.py create_sqldb
 ```

@@ -1,5 +1,0 @@
-PUBLIC_S3: avc-arpan-public
-PATH: Data/EA_FIFA19.csv
-DEST_S3_BUCKET: nw-arpanvgopal-s3
-DEST_S3_FOLDER: raw_data
-

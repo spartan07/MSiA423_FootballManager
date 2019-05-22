@@ -1,0 +1,13 @@
+s3:
+  PUBLIC_S3: avc-arpan-public
+  PATH: Data/EA_FIFA19.csv
+  DEST_S3_BUCKET: nw-arpanvgopal-s3
+  DEST_S3_FOLDER: raw_data
+rds:
+  type: mysql+pymysql
+  host: mysql-nw-db.cwnmh4e1h3t5.us-east-2.rds.amazonaws.com
+  port: 3306
+  dbname: msia423
+sqldb:
+  path: data/msia423.db
+

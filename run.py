@@ -3,21 +3,13 @@
 This module combines the argparsing of each module within src/ and enables the execution of the corresponding scripts
 so that all module imports can be absolute with respect to the main project directory.
 
-Current commands enabled:
-
-To create a database for Tracks with an initial song:
-
-    `python run.py create --artist="Britney Spears" --title="Radar" --album="Circus"`
-
-To add a song to an already created database:
-
-    `python run.py ingest --artist="Britney Spears" --title="Radar" --album="Circus"`
 """
 import argparse
 import logging.config
 import yaml
 import sys
 import config
+from os import  path
 
 logging.config.fileConfig("config/logging/local.conf")
 logger = logging.getLogger("run-football-manager")
@@ -28,46 +20,36 @@ from src.create_db import create_db_sql, create_db_rds
 
 
 if __name__ == '__main__':
-    try:
-        with open(config.S3_CONFIG, "r") as f:
-            s3_config = yaml.load(f)
-    except FileNotFoundError:
-        logger.error("S3 Config YAML File not Found")
-        sys.exit(-1)
+	try:
+		with open(config.config_path, "r") as f:
+			config_text = yaml.load(f)
+	except FileNotFoundError:
+		logger.error("Config YAML File not Found")
+		sys.exit(-1)
+	s3_config = config_text['s3']
+	if 'rds' in config_text.keys():
+		rds_config = config_text['rds']
+	if 'sqldb' in config_text.keys():
+		sql_config = config_text['sqldb']
+		DB_PATH = path.join(config.PROJECT_HOME, sql_config['path'])
+		db_sql_path = 'sqlite:///{}'.format(DB_PATH)
 
-    try:
-        with open(config.RDS_CONFIG, "r") as f:
-            rds_config = yaml.load(f)
-    except FileNotFoundError:
-        logger.error("DB Config YAML File not Found")
-        sys.exit(-1)
+	parser = argparse.ArgumentParser(description="Run components")
+	subparsers = parser.add_subparsers()
 
-    s3_bucket = s3_config["DEST_S3_BUCKET"]
-    s3_folder = s3_config["DEST_S3_FOLDER"]
-    s3_public =s3_config["PUBLIC_S3"]
-    s3_path =s3_config["PATH"]
+	sub_process = subparsers.add_parser('load',description = "Load data in s3")
+	sub_process.add_argument("--config", default=s3_config, help="s3 configurations")
+	sub_process.set_defaults(func=load_s3)
 
-    db_sql_path = config.SQLALCHEMY_DATABASE_URI
-    print(db_sql_path)
+	sub_process = subparsers.add_parser('create_sqldb',description = "Create a sqlite db")
+	sub_process.add_argument("--engine_string", default=db_sql_path, help="Connection uri for SQLALCHEMY")
+	sub_process.set_defaults(func=create_db_sql)
 
-    parser = argparse.ArgumentParser(description="Run components")
-    subparsers = parser.add_subparsers()
+	sub_process = subparsers.add_parser('create_rdsdb',description = "Create a rds db")
+	sub_process.add_argument("--user", help="Username for rds")
+	sub_process.add_argument("--password", help="Password for rds")
+	sub_process.add_argument("--config" , default= rds_config , help ="rds config settings")
+	sub_process.set_defaults(func=create_db_rds)
 
-    sub_process = subparsers.add_parser('load',description = "Load data in s3")
-    sub_process.add_argument("--public", default=s3_public, help="Public s3 Bucket")
-    sub_process.add_argument("--path", default=s3_path, help="Public s3 Path")
-    sub_process.add_argument("--s3bucket",default=s3_bucket, help="Destination S3 Bucket location")
-    sub_process.add_argument("--s3folder", default=s3_folder, help="Destination S3 Folder Name")
-    sub_process.set_defaults(func=load_s3)
-
-    sub_process = subparsers.add_parser('create_sqldb',description = "Create a sqlite db")
-    sub_process.add_argument("--engine_string", default=db_sql_path, help="Connection uri for SQLALCHEMY")
-    sub_process.set_defaults(func=create_db_sql)
-
-    sub_process = subparsers.add_parser('create_rdsdb',description = "Create a rds db")
-    sub_process.add_argument("--user", help="Username for rds")
-    sub_process.add_argument("--password", help="Password for rds")
-    sub_process.set_defaults(func=create_db_rds)
-
-    args = parser.parse_args()
-    args.func(args)
+	args = parser.parse_args()
+	args.func(args)

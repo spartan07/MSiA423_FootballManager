@@ -7,8 +7,8 @@ __pycache__/
 .png
 *.sh
 .idea
-.npy
-.pkl
+*.npy
+*.pkl
 
 # Folders to place all data science files which you dont want tracked
 #data/*

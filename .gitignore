@@ -7,23 +7,27 @@ __pycache__/
 .png
 *.sh
 .idea
+.npy
+.pkl
 
 # Folders to place all data science files which you dont want tracked
-data/*
-!data/production/
-!data/sample/
-!data/EA_FIFA19.csv
-models/*
-!models/README.md
-extra/
+#data/*
+#!data/production/
+#!data/sample/
+#!data/EA_FIFA19.csv
+#models/*
+#!models/README.md
+#extra/
 #src/pallet_positions/files
-test/test/*
+#test/test/*
 #testing
-!test/test/.gitkeep
+#!test/test/.gitkeep
+!test/X_test.npy
+!test/y_test.npy
 !.gitkeep
 
 # ipython notebooks
-*.ipynb
+#*.ipynb
 .ipynb_checkpoints/
 
 # C extensions

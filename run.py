@@ -20,6 +20,9 @@ from src.preprocess_data import pre_process
 from src.model import train_model
 from src.scoring_eval import score
 from src.predict_case import predict
+from app.app import start_app
+
+
 
 if __name__ == '__main__':
 	try:
@@ -72,6 +75,9 @@ if __name__ == '__main__':
 	sub_process = subparsers.add_parser('predict',description = "predict model")
 	sub_process.add_argument("--config", default=config_text, help="path to raw files in s3")
 	sub_process.set_defaults(func=predict)
+
+	sub_process = subparsers.add_parser('app',description = "Run Flask app")
+	sub_process.set_defaults(func=start_app)
 
 	args = parser.parse_args()
 	args.func(args)

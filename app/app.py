@@ -23,6 +23,7 @@ except FileNotFoundError:
     sys.exit(-1)
 app = flask.Flask(__name__, template_folder='templates')
 app.secret_key = "super secret key"
+app.config.from_pyfile('../config/flask_config.py')
 
 app_config = config_text['app']
 
@@ -58,6 +59,11 @@ def run():
                                  knn_out=nname,
                                  knn_pic=nid
                                  )
-
-if __name__ == '__main__':
-    app.run(debug=True)
+def start_app(args):
+    """Start application and choose to store user input in sqlite or rds
+        Args:
+            args: arguments including app specific configurations and specifications
+        Returns:
+            NA
+    """
+    app.run(debug=app.config['DEBUG'], port=app.config['PORT'], host=app.config['HOST'])

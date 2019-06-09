@@ -21,23 +21,28 @@ def score(args):
 	score_config = config_text['score_model']
 	if args.type =="s3":
 		s3_config = config_text['load']['s3']
-		client = boto3.client('s3')
 		try:
-			obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'],
-									Key=s3_config['DEST_S3_FOLDER']+score_config['inp_name']['feature'])
-			X_test = np.load(obj)
-			obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'],
-			                        Key=s3_config['DEST_S3_FOLDER'] + score_config['inp_name']['target'])
-			y_test = np.load(obj)
+			s3 = boto3.resource('s3')
+			obj = s3.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+score_config['inp_name']['feature'])
+			with io.BytesIO(obj.get()["Body"].read()) as f:
+				# rewind the file
+				f.seek(0)
+				X_test = np.loadtxt(f)
+			obj = s3.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+score_config['inp_name']['target'])
+			with io.BytesIO(obj.get()["Body"].read()) as f:
+				# rewind the file
+				f.seek(0)
+				y_test = np.loadtxt(f)
 		except FileNotFoundError:
-			logger.error("Features and target files not found. Run load data command")
+			logger.error("Test files. Run model command")
 			sys.exit(-1)
 		#Load model
 		s3 = boto3.resource('s3')
 		with io.BytesIO() as data:
-			s3.Bucket(s3_config['DEST_S3_BUCKET']).download_fileobj(score_config['path_to_tmo'], data)
+			s3.Bucket(s3_config['DEST_S3_BUCKET']).download_fileobj(s3_config['DEST_S3_FOLDER']+score_config['path_to_tmo'], data)
 			data.seek(0)  # move back to the beginning after writing
 			rf = pickle.load(data)
+			logger.info("Model loaded")
 
 	else:
 		try:

@@ -9,7 +9,7 @@ from io import StringIO
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
-from sklearn import metrics
+
 
 from os import path
 
@@ -62,15 +62,15 @@ def train_model(args):
 		pickle_byte_obj = pickle.dumps(rf)
 		s3_resource = boto3.resource('s3')
 		s3_resource.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+model_config['save_tmo']).put(Body=pickle_byte_obj)
-
+		logger.info("Trained model object saved to %s", s3_config['DEST_S3_BUCKET']+s3_config['DEST_S3_FOLDER']+model_config['save_tmo'])
 
 		csv_buffer = StringIO()
-		np.save(csv_buffer, test_features)
+		np.savetxt(csv_buffer, test_features)
 		s3_resource = boto3.resource('s3')
 		s3_resource.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+model_config['outp_test']['feature']).put(Body=csv_buffer.getvalue())
 
 		csv_buffer = StringIO()
-		np.save(csv_buffer, test_labels)
+		np.savetxt(csv_buffer, test_labels)
 		s3_resource = boto3.resource('s3')
 		s3_resource.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+model_config['outp_test']['target']).put(Body=csv_buffer.getvalue())
 

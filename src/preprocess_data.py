@@ -33,7 +33,7 @@ def pre_process(args):
 	else:
 		local_config = config['load']['local']
 		fifa = pd.read_csv(data_loc+local_config['path'])
-	print(fifa.shape)
+		logger.info("Data Read from ",data_loc+local_config['path'])
 
 	# Remove symbols and convert to nums for Wage,Value and Release Clause
 	def value_to_int(df_value):
@@ -191,7 +191,7 @@ def pre_process(args):
 		s3_resource.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+pre_config['processed']).put(Body=csv_buffer.getvalue())
 
 		csv_buffer = StringIO()
-		df_final.to_csv(csv_buffer)
+		adhoc.to_csv(csv_buffer)
 		s3_resource = boto3.resource('s3')
 		s3_resource.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+pre_config['adhoc']).put(Body=csv_buffer.getvalue())
 

@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+
+<style>
+
+body {
+  padding-top: 5rem;
+}
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+</style>
+<head>
+<link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Football Manager</title>
+</head>
+
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">Football Manager 2019</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse"  data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Find Players <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="https://store.playstation.com/en-us/product/UP0006-CUSA11599_00-FIFAFOOTBALL2019">FIFA-19 <span class="sr-only">(current)</span></a>
+          </li>
+          
+        </ul>
+        <form class="form-inline my-2 my-lg-0" action="https://www.google.com/" method = "get">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </nav>
+
+    
+  <main role="main" class="container">
+
+      <div class="starter-template">
+        <h1>Results</h1>
+      </div>
+
+    <!-- /.container -->
+
+
+<div class="result" align="center">
+
+        <br> Predicted value of Player:
+           <p style="font-size:50px">{{ result }}</p>
+
+</div>
+<div class="knn_out" align="center">
+<table>
+<tr>    
+        {% for value in knn_pic %}
+            <td><img src = {{ value }} width = "128", height = "128" class="rounded float-left" alt="..."></td>
+        {% endfor %}
+</tr>
+
+<tr>
+        {% for value in knn_out %}
+            <td align = "center">{{ value }}</td>
+        {% endfor %}
+</tr>
+        
+</table>
+
+<br>
+<br>
+<div class = "lead" align="center"> Parameters Used</div>
+    
+        {% for variable, value in original_input.items() %}
+            <div class = "btn btn-light"><b>{{ variable }}</b> : {{ value }}</div>
+        {% endfor %}
+        
+        <br>
+        <br>
+<a href = "/" class="btn btn-outline-info btn-lg" role = "button" float = "center"> Refine Parameters</a>
+</div>        
+</main>
+</body>
+
+</html>

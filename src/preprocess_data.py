@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from io import StringIO  # python3; python2: BytesIO
 import boto3
 import re
 import sys
@@ -21,14 +22,17 @@ def pre_process(args):
 	"""
 	#
 	config = args.config
-	s3_config = config['s3']
 	pre_config = config['pre_process']
-	client = boto3.client('s3')
-
-	obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'],
-							Key=s3_config['DEST_S3_FOLDER']+'/EA_FIFA_19.csv')
-	fifa = pd.read_csv(obj['Body'])
-	logger.info("Data Read from S3 bucket")
+	if args.type =='s3':
+		s3_config = config['load']['s3']
+		client = boto3.client('s3')
+		obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'],
+								Key=s3_config['DEST_S3_FOLDER']+'EA_FIFA_19.csv')
+		fifa = pd.read_csv(obj['Body'])
+		logger.info("Data Read from S3 bucket")
+	else:
+		local_config = config['load']['local']
+		fifa = pd.read_csv(data_loc+local_config['path'])
 	print(fifa.shape)
 
 	# Remove symbols and convert to nums for Wage,Value and Release Clause
@@ -157,7 +161,7 @@ def pre_process(args):
 					  'LAM', 'CAM', 'RAM', 'LM', 'LCM', 'CM', 'RCM', 'RM', 'LWB', 'LDM',
 					  'CDM', 'RDM', 'RWB', 'LB', 'LCB', 'CB', 'RCB', 'RB'], inplace=True)
 
-	df.drop(['Work Rate', 'Preferred Foot', 'Real Face', 'Position', 'Nationality'], axis=1, inplace=True)
+	df.drop(['Work Rate', 'Preferred Foot', 'Real Face','Nationality'], axis=1, inplace=True)
 
 	#Log transform response variable
 	df['Wage'] = np.log10(df['Wage'] + 1)
@@ -174,10 +178,24 @@ def pre_process(args):
 	df_final.drop(
 		columns=['Photo', 'Flag', 'Club Logo', 'Jersey Number', 'Joined', 'Special', 'Loaned From',
 				 'Body Type','Weight', 'Height', 'Contract Valid Until', 'Name', 'Club',
-				 'WorkRate2'], inplace=True)
+				 'WorkRate2','Position'], inplace=True)
 
 	df_final = pd.get_dummies(df_final)
 	df_final.rename(columns={'WorkRate1_High': 'WorkRate_High',
 							 'WorkRate1_Low': 'WorkRate_Low', 'WorkRate1_Medium': 'WorkRate_Medium'}, inplace=True)
-	df_final.to_csv(data_loc+pre_config['processed'],index=False)
-	adhoc.to_csv(data_loc+pre_config['adhoc'],index=False)
+
+	if args.type =="s3":
+		csv_buffer = StringIO()
+		df_final.to_csv(csv_buffer)
+		s3_resource = boto3.resource('s3')
+		s3_resource.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+pre_config['processed']).put(Body=csv_buffer.getvalue())
+
+		csv_buffer = StringIO()
+		df_final.to_csv(csv_buffer)
+		s3_resource = boto3.resource('s3')
+		s3_resource.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+pre_config['adhoc']).put(Body=csv_buffer.getvalue())
+
+
+	else:
+		df_final.to_csv(data_loc+pre_config['processed'],index=False)
+		adhoc.to_csv(data_loc+pre_config['adhoc'],index=False)

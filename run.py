@@ -14,7 +14,7 @@ from os import  path
 logging.config.fileConfig("config/logging/local.conf")
 logger = logging.getLogger("run-football-manager")
 
-from src.load_data import load_s3
+from src.load_data import load_data
 from src.create_db import create_db_sql, create_db_rds
 from src.preprocess_data import pre_process
 from src.model import train_model
@@ -28,7 +28,7 @@ if __name__ == '__main__':
 	except FileNotFoundError:
 		logger.error("Config YAML File not Found")
 		sys.exit(-1)
-	s3_config = config_text['s3']
+
 	if 'rds' in config_text.keys():
 		rds_config = config_text['rds']
 	if 'sqldb' in config_text.keys():
@@ -40,8 +40,9 @@ if __name__ == '__main__':
 	subparsers = parser.add_subparsers()
 
 	sub_process = subparsers.add_parser('load',description = "Load data in s3")
-	sub_process.add_argument("--config", default=s3_config, help="s3 configurations")
-	sub_process.set_defaults(func=load_s3)
+	sub_process.add_argument("--type" , default = "s3",help ="type of configuration")
+	sub_process.add_argument("--config", default=config_text, help="s3 configurations")
+	sub_process.set_defaults(func=load_data)
 
 	sub_process = subparsers.add_parser('create_sqldb',description = "Create a sqlite db")
 	sub_process.add_argument("--engine_string", default=db_sql_path, help="Connection uri for SQLALCHEMY")
@@ -53,15 +54,18 @@ if __name__ == '__main__':
 	sub_process.add_argument("--config" , default= rds_config , help ="rds config settings")
 	sub_process.set_defaults(func=create_db_rds)
 
-	sub_process = subparsers.add_parser('process',description = "Pre-p")
+	sub_process = subparsers.add_parser('process',description = "Pre-processing")
+	sub_process.add_argument("--type", default="s3", help="path to ")
 	sub_process.add_argument("--config", default=config_text, help="path to raw files in s3")
 	sub_process.set_defaults(func=pre_process)
 
 	sub_process = subparsers.add_parser('model',description = "train model")
+	sub_process.add_argument("--type", default = "s3", help="path to s3")
 	sub_process.add_argument("--config", default=config_text, help="path to raw files in s3")
 	sub_process.set_defaults(func=train_model)
 
 	sub_process = subparsers.add_parser('score',description = "score model")
+	sub_process.add_argument("--type", default = "s3", help="path to s3")
 	sub_process.add_argument("--config", default=config_text, help="path to raw files in s3")
 	sub_process.set_defaults(func=score)
 

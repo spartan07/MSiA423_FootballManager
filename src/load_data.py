@@ -40,7 +40,7 @@ def load_data(args):
 		s3 = boto3.resource('s3')
 		source_bucket = s3.Bucket(s3_config['PUBLIC_S3'])
 		try:
-			source_bucket.download_file(s3_config['PATH'], data_loc+'EA_FIFA_19.csv')
+			source_bucket.download_file(s3_config['PATH'], data_loc+local_config['path'])
 		except botocore.exceptions.NoCredentialsError as e:
 			logger.error(e)
 			sys.exit(1)

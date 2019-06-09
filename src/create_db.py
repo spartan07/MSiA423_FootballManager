@@ -1,5 +1,5 @@
 import logging.config
-from sqlalchemy import create_engine, Column, Integer, String, Text
+from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 import sys
 
@@ -7,8 +7,6 @@ import sys
 
 #logging.config.fileConfig(config.LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
-
-
 Base = declarative_base()
 
 
@@ -16,13 +14,20 @@ class user_input(Base):
     """ Defines the data model for the table user_input"""
     __tablename__ = 'user_input'
     id = Column(String(100), primary_key=True, unique=True, nullable=False)
-    age = Column(Integer, unique=False, nullable=False)
-    overall = Column(Integer, unique=False, nullable=False)
-    potential = Column(Integer, unique=False, nullable=False)
-    position = Column(String(10), unique=False, nullable=False)
-    wage = Column(Integer, unique=False, nullable=False)
-    contract_expiry = Column(String(100), unique = False, nullable = True)
-    international_reputation = Column(Integer, unique=False, nullable=False)
+    Reactions = Column(Integer, unique=False, nullable=False)
+    Potential = Column(Integer, unique=False, nullable=False)
+    Age = Column(Integer, unique=False, nullable=False)
+    BallControl = Column(Integer, unique=False, nullable=False)
+    StandingTackle = Column(Integer, unique=False, nullable=False)
+    Composure = Column(Integer, unique = False, nullable = True)
+    Dribbling = Column(Integer, unique=False, nullable=False)
+    Positioning = Column(Integer, unique=False, nullable=False)
+    Finishing = Column(Integer, unique=False, nullable=False)
+    GKReflexes = Column(Integer, unique=False, nullable=False)
+    Position = Column(String(10), unique=False, nullable=False)
+
+
+
 
 
 

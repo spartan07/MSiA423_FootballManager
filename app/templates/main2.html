@@ -3,7 +3,8 @@
 
 <style>
 form {
-    margin: auto;
+    margin-left: 100px;
+    margin-right: 100px;
     width: 35%;
 }
 .result {
@@ -28,7 +29,7 @@ form {
   opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
   -webkit-transition: .2s; /* 0.2 seconds transition on hover */
   transition: opacity .2s;
-  float: right;
+  float: center;
 }
 
 /* Mouse-over effects */
@@ -55,13 +56,16 @@ form {
 
 body {
   padding-top: 5rem;
-    background-image: url("Football_Manager_logo.png");
+    background-image: url("https://www.esportsbets.com/wp-content/uploads/2018/03/shutterstock_418266109-1.jpg");
     background-size: 100% 100%;
+     background-image: linear-gradient(0deg, rgba(255, 255, 255, 1.0), 50%, rgba(255, 255, 255, 0.0)),
+     url('https://www.esportsbets.com/wp-content/uploads/2018/03/shutterstock_418266109-1.jpg');;
 }
 
 .starter-template {
-  padding: 3rem 1.5rem;
-  text-align: center;
+  padding: 1rem 1.5rem;
+  {#text-align: center;#}
+    margin-right: auto;
 }
 
 </style>
@@ -107,15 +111,23 @@ slider.on("slide", function(sliderValue) {
     
   <main role="main" class="container">
 
-      <div class="starter-template">
+      <div class="starter-template" >
         <h1>Predict Market Value</h1>
-        <p class="lead">Use this form to fill your player's attributes and find their value in today's market</p>
+          <p class="lead">Use this form to fill your player's attributes and find their value <br/>
+              in today's market</p>
       </div>
 
     </main><!-- /.container -->
 
 
-<form action="/results" method="POST">
+{#<p>#}
+{#        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5VPgeQ3ZBSuF06QlmibiMClunRkQJDAD3hurnlVfl_MJUXn_O"#}
+{#             alt="CR7" style="float:left;margin:0 20px 20px 0;width:333px;height:400px;">#}
+{#        <img src="https://media3.giphy.com/media/XS3AwCGCO3zvG/giphy.gif?cid=790b76115cfd738a6f3350696fd4dd55&rid=giphy.gif"#}
+{#             alt="Dwight Schrute" style="float:right;margin:0 0px 0px 0;width:333px;height:400px;">#}
+{#</p>#}
+
+<form action="/results" method="POST" align="left">
     <fieldset>
       <div class="form-row align-items-center">
            Position: <select class="custom-select my-1 mb-2 mr-sm-2" name = "Position" required>
@@ -150,6 +162,7 @@ slider.on("slide", function(sliderValue) {
         </select>
  </div>
  <br>
+
  <br>
         Reactions:
         <input type="range" min="1" max="100" value="50" title = "Reactions" class="slider" name = "Reactions" oninput="Reactions2.value = Reactions.value">
@@ -160,7 +173,7 @@ slider.on("slide", function(sliderValue) {
         <output id="Potential2" class = "font-weight-bold">50</output>
         <br>
         <br> Age:
-        <input type="range" min="12" max="50" value="31" class="slider" id="myRange" name = "Age" oninput="Age2.value = Age.value">
+        <input type="range" min="16" max="50" value="31" class="slider" id="myRange" name = "Age" oninput="Age2.value = Age.value">
         <output id="Age2"class = "font-weight-bold"> 31    </output>
         <br>
         <br> BallControl:
@@ -192,12 +205,12 @@ slider.on("slide", function(sliderValue) {
         <output id="G2" class = "font-weight-bold">50</output>
         
         <br>
-
         <br>
         <input type="submit" class="btn btn-secondary btn-lg btn-block">
     </fieldset>
 </form>
 <br>
+
 
 </body>
 

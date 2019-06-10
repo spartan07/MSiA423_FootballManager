@@ -13,7 +13,7 @@ Base = declarative_base()
 class user_input(Base):
     """ Defines the data model for the table user_input"""
     __tablename__ = 'user_input'
-    id = Column(String(100), primary_key=True, unique=True, nullable=False)
+    id = Column(Integer, primary_key=True, unique=True, nullable=False, autoincrement=True)
     Reactions = Column(Integer, unique=False, nullable=False)
     Potential = Column(Integer, unique=False, nullable=False)
     Age = Column(Integer, unique=False, nullable=False)
@@ -25,10 +25,7 @@ class user_input(Base):
     Finishing = Column(Integer, unique=False, nullable=False)
     GKReflexes = Column(Integer, unique=False, nullable=False)
     Position = Column(String(10), unique=False, nullable=False)
-
-
-
-
+    Predicted_Val = Column(Integer, unique= False, nullable=False)
 
 
     def __repr__(self):
@@ -43,7 +40,7 @@ def create_db_sql(args):
     Returns: Optional user argument with sql engine
     """
     try:
-
+        print(args.engine_string)
         engine = create_engine(args.engine_string)
         logger.info("Creating sqlite database")
 

@@ -5,10 +5,14 @@
 
 body {
   padding-top: 5rem;
+    background-image: url("https://www.esportsbets.com/wp-content/uploads/2018/03/shutterstock_418266109-1.jpg");
+    background-size: 100% 100%;
+     background-image: linear-gradient(0deg, rgba(255, 255, 255, 1.0), 50%, rgba(255, 255, 255, 0.0)),
+     url('https://www.esportsbets.com/wp-content/uploads/2018/03/shutterstock_418266109-1.jpg');;
 }
 .starter-template {
   padding: 3rem 1.5rem;
-  text-align: center;
+  text-align: left;
 }
 
 </style>
@@ -41,24 +45,30 @@ body {
     
   <main role="main" class="container">
 
-      <div class="starter-template">
-        <h1>Results</h1>
-      </div>
+{#      <div class="starter-template">#}
+{#        <h1>Results</h1>#}
+{#      </div>#}
 
     <!-- /.container -->
 
 
-<div class="result" align="center">
+<div class="result" align="left">
 
         <br> Predicted value of Player:
            <p style="font-size:50px">{{ result }}</p>
 
 </div>
-<div class="knn_out" align="center">
+
+<div class="Similar Players" align="left">
+
+        <br style="..."> Players with similar attributes
+</div>
+  <br>
+<div class="knn_out" align="left">
 <table>
 <tr>    
         {% for value in knn_pic %}
-            <td><img src = {{ value }} width = "128", height = "128" class="rounded float-left" alt="..."></td>
+            <td><img src = {{ value }} width = "64", height = "64" class="rounded float-left" alt="..."></td>
         {% endfor %}
 </tr>
 
@@ -67,12 +77,18 @@ body {
             <td align = "center">{{ value }}</td>
         {% endfor %}
 </tr>
-        
+
+<tr>
+        {% for value in knn_pos %}
+            <td align = "center">{{ value }}</td>
+        {% endfor %}
+</tr>
+
 </table>
 
 <br>
 <br>
-<div class = "lead" align="center"> Parameters Used</div>
+<div class = "lead" align="left"> Parameters Used</div>
     
         {% for variable, value in original_input.items() %}
             <div class = "btn btn-light"><b>{{ variable }}</b> : {{ value }}</div>

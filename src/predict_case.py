@@ -79,10 +79,11 @@ def knn_manip(inp):
 	nneighbor_id = nneighbors['ID'].tolist()
 	nname = adhoc.loc[adhoc['ID'].isin(nneighbor_id), 'Name'].tolist()
 	nid = adhoc.loc[adhoc['ID'].isin(nneighbor_id), 'Photo'].tolist()
+	npos = adhoc.loc[adhoc['ID'].isin(nneighbor_id), 'Position'].tolist()
 
 	# adhoc = adhoc.loc[adhoc['ID'].isin(nneighbor_id),:]
 	# adhoc.to_csv(config.data_loc+'neighbor.csv', index=False)
-	return nname, nid
+	return nname, nid, npos
 
 
 def predict(inp):

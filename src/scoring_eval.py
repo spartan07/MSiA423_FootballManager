@@ -60,17 +60,24 @@ def score(args):
 	pred_act = 10 ** predictions
 	test_act = 10 ** y_test
 
+	acc = abs(1-pred_act/test_act)
+	acc_flag = [1 if x<0.2 else 0 for x in acc]
+
+
 	errors = abs(predictions - y_test)
+
+	#errors = abs(pred_act - test_act)
 	print('Mean Absolute Error:', round(np.mean(errors), 2))
 	# Print out the MSE
-	print('Mean Square Error:', round(np.sum(errors ** 2), 2))
+	print('Mean Square Error:', round(np.mean(errors ** 2), 2))
 
 	r2_val = r2_score(test_act, pred_act)
 
 	with open(model_loc + score_config['save_scores'], 'w') as the_file:
 		the_file.write('MAE :' + str(round(np.mean(errors), 2)) + '\n')
-		the_file.write('MSE :' + str(round(np.sum(errors ** 2), 2)) + '\n')
+		the_file.write('MSE :' + str(round(np.mean(errors ** 2), 2)) + '\n')
 		the_file.write('R2 :' + str(round(r2_val, 2)) + '\n')
+		the_file.write('Prediction_Accuracy:' + str(round(np.mean(acc_flag), 2)))
 
 	if args.type =="s3":
 		s3 = boto3.resource('s3')

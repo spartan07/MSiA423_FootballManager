@@ -1,10 +1,13 @@
 import flask
 import pickle
 from os import path
+from flask_sqlalchemy import SQLAlchemy
+from src.create_db import user_input
 import sys
 import yaml
 import logging
 import math
+import os
 
 # Use pickle to load in the pre-trained model.
 rel_path = path.dirname(path.dirname(path.abspath(__file__)))
@@ -21,15 +24,27 @@ try:
 except FileNotFoundError:
     logger.error("Config YAML File not Found")
     sys.exit(-1)
+
 app = flask.Flask(__name__, template_folder='templates')
 app.secret_key = "super secret key"
 app.config.from_pyfile('../config/flask_config.py')
 
 app_config = config_text['app']
 
+if app.config['USE_RDS']:
+    aws_config = config_text['rds']
+
+    conn_type = aws_config['type']
+    host = aws_config['host']
+    port = aws_config['port']
+    database = aws_config['dbname']
+    user = os.environ.get('MYSQL_USER')
+    password = os.environ.get('MYSQL_PASSWORD')
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = '{}://{}:{}@{}:{}/{}'. \
+        format(conn_type, user, password, host, port, database)
+
 millnames = ['', 'K', ' M', ' B', ' T']
-
-
 def millify(n):
     n = float(n)
     millidx = max(0, min(len(millnames) - 1,
@@ -37,7 +52,7 @@ def millify(n):
 
     return '{:.0f}{}'.format(n / 10 ** (3 * millidx), millnames[millidx])
 
-
+db = SQLAlchemy(app)
 @app.route('/', methods=['GET', 'POST'])
 def main():
     return flask.render_template('main2.html')
@@ -45,22 +60,40 @@ def main():
 
 @app.route('/results', methods=['GET', 'POST'])
 def run():
-    inp = {}
-    for elem in app_config['input_list']:
-        flask.flash(elem)
-        inp[elem] = flask.request.form[elem]
-    prediction = predict(inp)
+	inp = {}
+	for elem in app_config['input_list']:
+		flask.flash(elem)
+		inp[elem] = flask.request.form[elem]
+	prediction = predict(inp)
 
-    nname, nid = knn_manip(inp)
-    print(nname)
-    return flask.render_template('results.html',
-                                 original_input=inp,
-                                 result="GBP " + millify(int(prediction)),
-                                 knn_out=nname,
-                                 knn_pic=nid
-                                 )
+	nname, nid, npos = knn_manip(inp)
+	print(nname)
+
+	try:
+		userinp = user_input(Reactions=inp['Reactions'], Potential=inp['Potential'], Age=inp['Age'],
+		                     BallControl=inp['BallControl'],
+		                     StandingTackle=inp['StandingTackle'], Composure=inp['Composure'], Dribbling=inp['Dribbling'],
+		                     Positioning=inp['Positioning'], Finishing=inp['Finishing'], GKReflexes=inp['GKReflexes'],
+		                     Position=inp['Position'], Predicted_Val=prediction)
+
+		db.session.add(userinp)
+		db.session.commit()
+		logger.info('New user input added')
+	except Exception as e:
+		logger.error(e)
+		sys.exit(-1)
+
+	return flask.render_template('results.html',
+	                             original_input=inp,
+	                             result="GBP " + millify(int(prediction)),
+	                             knn_out=nname,
+	                             knn_pic=nid,
+	                             knn_pos =npos
+	                             )
+
+
 def start_app(args):
-    """Start application and choose to store user input in sqlite or rds
+    """Start application and choose to store user input in sqlite or rdsss
         Args:
             args: arguments including app specific configurations and specifications
         Returns:

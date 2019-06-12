@@ -194,8 +194,9 @@ def pre_process(args):
 		adhoc.to_csv(csv_buffer)
 		s3_resource = boto3.resource('s3')
 		s3_resource.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+pre_config['adhoc']).put(Body=csv_buffer.getvalue())
-
+		logger.info('Artifacts saved at %s',s3_config['DEST_S3_BUCKET']+s3_config['DEST_S3_FOLDER'])
 
 	else:
 		df_final.to_csv(data_loc+pre_config['processed'],index=False)
 		adhoc.to_csv(data_loc+pre_config['adhoc'],index=False)
+		logger.info('Artifacts saved at %s', data_loc)

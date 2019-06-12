@@ -50,19 +50,22 @@ if app.config['USE_RDS']:
 		format(conn_type, user, password, host, port, database)
 
 if app.config['USE_S3']:
-	s3 = boto3.resource('s3')
-	with io.BytesIO() as data:
-		s3.Bucket(s3_config['DEST_S3_BUCKET']).download_fileobj(
-			s3_config['DEST_S3_FOLDER'] + score_config['path_to_tmo'], data)
-		data.seek(0)  # move back to the beginning after writing
-		rf = pickle.load(data)
-		logger.info("Model loaded")
+	try:
+		s3 = boto3.resource('s3')
+		with io.BytesIO() as data:
+			s3.Bucket(s3_config['DEST_S3_BUCKET']).download_fileobj(
+				s3_config['DEST_S3_FOLDER'] + score_config['path_to_tmo'], data)
+			data.seek(0)  # move back to the beginning after writing
+			rf = pickle.load(data)
+			logger.info("Model loaded")
 
-	client = boto3.client('s3')
-	obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'], Key=s3_config['DEST_S3_FOLDER'] + config_text['pre_process']['processed'])
-	processed = pd.read_csv(obj['Body'])
-	obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'], Key=s3_config['DEST_S3_FOLDER'] + config_text['pre_process']['adhoc'])
-	adhoc = pd.read_csv(obj['Body'])
+		client = boto3.client('s3')
+		obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'], Key=s3_config['DEST_S3_FOLDER'] + config_text['pre_process']['processed'])
+		processed = pd.read_csv(obj['Body'])
+		obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'], Key=s3_config['DEST_S3_FOLDER'] + config_text['pre_process']['adhoc'])
+		adhoc = pd.read_csv(obj['Body'])
+	except FileNotFoundError as e:
+		logger.error(e)
 
 else:
 	try:
@@ -103,18 +106,18 @@ def run():
 	print(nname)
 
 	try:
-		userinp = user_input(Reactions=inp['Reactions'],\
-							 Potential=inp['Potential'],\
-							 Age=inp['Age'], \
-							 BallControl=inp['BallControl'],\
-							 StandingTackle=inp['StandingTackle'],\
-							 Composure=inp['Composure'],\
-							 Dribbling=inp['Dribbling'],\
-							 Positioning=inp['Positioning'],\
-							 Finishing=inp['Finishing'], \
-							 GKReflexes=inp['GKReflexes'],
-							 Position=inp['Position'], \
-							 Predicted_Val=prediction)
+		userinp = user_input(Reactions=inp['Reactions'], \
+		                     Potential=inp['Potential'], \
+		                     Age=inp['Age'], \
+		                     BallControl=inp['BallControl'], \
+		                     StandingTackle=inp['StandingTackle'], \
+		                     Composure=inp['Composure'], \
+		                     Dribbling=inp['Dribbling'], \
+		                     Positioning=inp['Positioning'], \
+		                     Finishing=inp['Finishing'], \
+		                     GKReflexes=inp['GKReflexes'],
+		                     Position=inp['Position'], \
+		                     Predicted_Val=prediction)
 
 		db.session.add(userinp)
 		db.session.commit()

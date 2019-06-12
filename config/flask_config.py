@@ -9,7 +9,7 @@ PORT = 3000
 HOST = "127.0.0.1"
 MAX_ROWS_SHOW = 100
 
-USE_S3 = True
+USE_S3 = False
 USE_RDS = True
 DATABASE_NAME = 'msia423'
 DB_PATH = path.join(PROJECT_HOME, 'data/msia423.db')

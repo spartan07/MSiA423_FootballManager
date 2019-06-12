@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
 	sub_process = subparsers.add_parser('load',description="Load data in s3")
 	sub_process.add_argument("--type", default="local", help ="type of configuration")
-	sub_process.add_argument("--config", default=config_text, help="s3 configurations")
+	sub_process.add_argument("--config", default=config_text, help=".yml configuration file")
 	sub_process.set_defaults(func=load_data)
 
 	sub_process = subparsers.add_parser('create_sqldb',description = "Create a sqlite db")

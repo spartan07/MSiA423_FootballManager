@@ -1,3 +1,4 @@
+#s3 oonfigurations
 s3:
   PUBLIC_S3: avc-arpan-public
   PATH: Data/EA_FIFA19.csv
@@ -7,11 +8,13 @@ s3:
 load:
   local:
     path: EA_FIFA19.csv
+#RDS configurations
 rds:
   type: mysql+pymysql
   host: mysql-nw-db.cwnmh4e1h3t5.us-east-2.rds.amazonaws.com
   port: 3306
   dbname: msia423
+
 sqldb:
   path: data/msia423.db
 

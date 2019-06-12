@@ -102,20 +102,45 @@ conda activate football_manager
 pip install -r requirements.txt
 ```
 
-In order to use boto3 and access s3 buckets, awsclient needs to be configured.
+**Configurations**
 
-Enter aws config in command line and input secretid and other information and make sure ~/.aws/config and ~/.aws/credentials exist
+In order to use boto3 and access s3 buckets, awsclient needs to be configured.
+Enter aws config in command line and input secretid and other information and 
+make sure ~/.aws/config and ~/.aws/credentials exist.
+
+The pipeline can be reproduced either locally by saving the artifacts and creating a sqlite or using AWS services by creating all the artifacts in an S3 bucket and using RDS.
+
+Please ensure the following configurations are changed in the yml file and flask_config if choosing the AWS option.
+
+- set the username and password for RDS as environment variables.
+
+If data needs to be pushed to RDS please create a .mysqlconfig files as follows:
+
+```commandline
+export MYSQL_USER=<username>
+export MYSQL_PASSWORD=<password>
+``` 
+After creating this file, please run the following to create the environment variables: 
+```commandline
+echo source vi ~/.mysqlconfig >> ~/.bash_profile
+```
+- Edit the DEST_S3_BUCKET and DEST_S3_FOLDER keys in the config.yml file to match your S3 bucket and folder in the bucket respectively.
+This is where all the intermediate artifacts will be saved.
+- Edit rds configurations (port,host,dbname) in the config.yml file to match your RDS configurations.
+- Change the variables USE_S3 & USE_RDS values to True in flask_config.py
+
+
+
 
 **Loading data to S3**
 
-Load data from a public s3 bucket(default) to bucket of your choice.
+Load data from a public s3 bucket(default) to s3bucket or locally
 From the root directory run
 ```commandline
-python run.py load 
+python run.py load --type <local/s3> 
 ```
-The default s3 configs are provide in the config/config.yml YAML file. 
-Edit the DEST_S3_BUCKET and DEST_S3_FOLDER to desired S3 paths and folder name to run
-
+The default s3 configs are provide in the config/config.yml YAML file
+Provide the --type option as local or s3 to load the data locally or in s3 bucket.
 
 **Initialize database**
 
@@ -134,10 +159,62 @@ The default rds configs are provide in the config/rds_config.yml YAML file.
 Edit host, port and db name in the yaml file and run
 
 ```commandline
-python run.py create_rdsdb --user <username> --password <password>
+python run.py create_rdsdb 
 ```
-Please note that the username and password are mandatory arguments to be passed to set up an rds db. 
+Please note that the username and password must be set as environment variable according to the instructions provided in the previous section
 
+**Process data**
 
+To process the raw data and create artifacts that will be used in the subsequent steps and also for user-input prediction, run
 
+```commandline
+python run.py process --type <local/s3>
+```
+The default configurations are provide in the config/config.yml YAML file under 'pre_process' section
+Provide the --type option as local or s3 to create the artifacts locally or in s3 bucket.
 
+**Model Building**
+
+To build a model using the processed dataset and save the model object, test data features and labels, run
+
+```commandline
+python run.py model --type <local/s3>
+```
+
+The default configurations are provide in the config/config.yml YAML file under 'model' section
+Provide the --type option as local or s3 to create the artifacts locally or in s3 bucket.
+
+**Scoring and Evaluation**
+
+To evaluate the model on test dataset and report the metrics run
+```commandline
+python run.py score --type <local/s3>
+```
+The default configurations are provide in the config/config.yml YAML file under 'score_model' section
+Provide the --type option as local or s3 to create the artifacts locally or in s3 bucket.
+
+**Running the app**
+
+After the pipeline is setup, to launch the app locally run
+```commandline
+python run.py app
+```
+
+To launch the app on an EC2 instance edit PORT & HOST in config/flask_config.py.
+Add ':<PORT>' to your public IP of EC2 instance to view the app in browser.
+
+**Reproduce using makefiles**
+
+To sequentially run the steps of the pipeline and launch the app by creating 
+a database and saving the files locally run
+
+```commandline
+make all_local
+```
+ 
+To sequentially run the steps of the pipeline and launch the app by using 
+a rds database and saving the files on S3 run
+
+```commandline
+make all_aws type=s3
+```

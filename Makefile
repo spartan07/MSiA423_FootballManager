@@ -1,7 +1,7 @@
 type=local
-all: load process sqldb rdsdb model score app
-all_sql: load process sqldb model score app
-all_rds: load process rdsdb model score app
+all: load process sqldb rdsdb model score run_app
+all_sql: load process sqldb model score run_app
+all_aws: load process rdsdb model score run_app
 .PHONY: all
 
 load:
@@ -22,6 +22,6 @@ model:
 score:
 	python run.py score --type ${type}
 
-app:
+run_app:
 	python run.py app
 

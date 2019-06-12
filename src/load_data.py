@@ -41,6 +41,7 @@ def load_data(args):
 		source_bucket = s3.Bucket(s3_config['PUBLIC_S3'])
 		try:
 			source_bucket.download_file(s3_config['PATH'], data_loc+local_config['path'])
+			logger.info("Raw data copied succesfully at %s",data_loc+local_config['path'])
 		except botocore.exceptions.NoCredentialsError as e:
 			logger.error(e)
 			sys.exit(1)

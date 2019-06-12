@@ -21,15 +21,21 @@ from config import data_loc,model_loc,test_loc
 logger  = logging.getLogger(__name__)
 
 def train_model(args):
+	"""
+	Builds regression model and saves model pickle file along with test data split into features dataset and label daatset
+	:param args: onfiguration from yaml file and user input to identify type (use s3 or local)
+	:return:
+	"""
 	config_text = args.config
 	model_config = config_text['model']
 	if args.type =="s3":
 		try:
-			s3_config = config_text['load']['s3']
+			s3_config = config_text['s3']
 			client = boto3.client('s3')
 			obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'],
 									Key=s3_config['DEST_S3_FOLDER']+model_config['inp_data'])
 			data = pd.read_csv(obj['Body'])
+			logger.info("Preprocessed data read")
 		except botocore.exceptions.NoCredentialsError as e:
 			logger.error(e)
 	else:
@@ -37,7 +43,7 @@ def train_model(args):
 			data = pd.read_csv(data_loc + model_config['inp_data'])
 			logger.info("Preprocessed data read")
 		except FileNotFoundError:
-			logger.error("Preprocessed dataframe not found. Run process command")
+			logger.error("Preprocessed data-frame not found. Run process command")
 			sys.exit(-1)
 
 	methods = dict(rforest=RandomForestRegressor,linear_regression=LinearRegression)
@@ -69,14 +75,24 @@ def train_model(args):
 		s3_resource = boto3.resource('s3')
 		s3_resource.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+model_config['outp_test']['feature']).put(Body=csv_buffer.getvalue())
 
+		logger.info("Test data features saved to %s", s3_config['DEST_S3_BUCKET']+s3_config['DEST_S3_FOLDER']+model_config['outp_test']['feature'])
+
+
+
 		csv_buffer = StringIO()
 		np.savetxt(csv_buffer, test_labels)
 		s3_resource = boto3.resource('s3')
 		s3_resource.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+model_config['outp_test']['target']).put(Body=csv_buffer.getvalue())
 
+		logger.info("Test data labels saved to %s", s3_config['DEST_S3_BUCKET']+s3_config['DEST_S3_FOLDER']+model_config['outp_test']['target'])
+
+
+
 	else:
 		np.save(test_loc + model_config['outp_test']['feature'], test_features)
+		logger.info("Test data features saved to %s", model_loc + model_config['outp_test']['feature'])
 		np.save(test_loc + model_config['outp_test']['target'], test_labels)
+		logger.info("Test data labels saved to %s", model_loc + model_config['outp_test']['target'])
 		with open(model_loc + model_config['save_tmo'], "wb") as f:
 			pickle.dump(rf, f)
 		logger.info("Trained model object saved to %s", model_loc + model_config['save_tmo'])

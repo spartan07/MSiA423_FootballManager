@@ -17,10 +17,15 @@ from config import data_loc,model_loc,test_loc
 logger  = logging.getLogger(__name__)
 
 def score(args):
+	"""
+	Scores the random forest model on the test data and saves a .txt file, with the metrics in the folder model(local) or in s3 bucket
+	:param args: User input to identify if the data source is in s3 or local
+	:return:
+	"""
 	config_text = args.config
 	score_config = config_text['score_model']
 	if args.type =="s3":
-		s3_config = config_text['load']['s3']
+		s3_config = config_text['s3']
 		try:
 			s3 = boto3.resource('s3')
 			obj = s3.Object(s3_config['DEST_S3_BUCKET'], s3_config['DEST_S3_FOLDER']+score_config['inp_name']['feature'])
@@ -34,7 +39,7 @@ def score(args):
 				f.seek(0)
 				y_test = np.loadtxt(f)
 		except FileNotFoundError:
-			logger.error("Test files. Run model command")
+			logger.error("Model object not found. Generate model first")
 			sys.exit(-1)
 		#Load model
 		s3 = boto3.resource('s3')
@@ -61,16 +66,9 @@ def score(args):
 	test_act = 10 ** y_test
 
 	acc = abs(1-pred_act/test_act)
-	acc_flag = [1 if x<0.2 else 0 for x in acc]
-
+	acc_flag = [1 if x < 0.2 else 0 for x in acc]
 
 	errors = abs(predictions - y_test)
-
-	#errors = abs(pred_act - test_act)
-	print('Mean Absolute Error:', round(np.mean(errors), 2))
-	# Print out the MSE
-	print('Mean Square Error:', round(np.mean(errors ** 2), 2))
-
 	r2_val = r2_score(test_act, pred_act)
 
 	with open(model_loc + score_config['save_scores'], 'w') as the_file:
@@ -85,6 +83,7 @@ def score(args):
 		s3.Bucket(s3_config['DEST_S3_BUCKET']).upload_file(model_loc + score_config['save_scores'],
 		                                                   s3_config['DEST_S3_FOLDER']+ score_config['save_scores'])
 		os.remove(model_loc + score_config['save_scores'])
+		logger.info('Metrics saved in S3 location')
 	else:
 		logger.info("Metrics saved at %s", model_loc + score_config['save_scores'])
 

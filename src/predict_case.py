@@ -3,7 +3,6 @@ import sys
 import yaml
 import pandas as pd
 import numpy as np
-import pickle
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsRegressor
 
@@ -23,10 +22,10 @@ except FileNotFoundError:
 	sys.exit(-1)
 
 
-# inp = {'Reactions':65,'Potential':80,'Age':25,'BallControl':79,'StandingTackle':80,'Composure':80,
-# 'Dribbling':65,'Positioning':90,'Finishing':80,'GKReflexes':90,'Position':'CAM'}
-
 def simple_position(df):
+	"""
+	Create a simplified position varaible to account for all player positions
+	"""
 	if df['Position'] == 'GK':
 		return 'GK'
 	elif (df['Position'] == 'RB') | (df['Position'] == 'LB') | (df['Position'] == 'CB') | (df['Position'] == 'LCB') | (
@@ -47,7 +46,14 @@ def simple_position(df):
 		return df.Position
 
 
-def knn_manip(inp):
+def knn_manip(inp, processed, adhoc):
+	"""
+	Finds the most similar players to a given input using KNNRegressor
+	:param inp: A dictionary of player attribute-value pairs
+	:param processed: Dataset containing player skill attributes
+	:param adhoc: Dataset containing player personality attributes
+	:return: returns name, link to photos and positions of similar players
+	"""
 	predict_config = config_text['predict']
 	df = pd.DataFrame(inp, index=[0])
 	df['Simple_Position'] = df.apply(simple_position, axis=1)
@@ -59,8 +65,7 @@ def knn_manip(inp):
 	df.drop(labels=['Position', 'Simple_Position'], axis=1, inplace=True)
 
 	# Find neighbors from processed data
-	processed = pd.read_csv(config.data_loc + 'processed_fifa.csv')
-	adhoc = pd.read_csv(config.data_loc + 'adhoc.csv')
+
 	features_list = predict_config['features_list'] + [col for col in processed.columns if col.startswith('Simple_')]
 	position_data = processed.loc[processed[col_name] == 1, :]
 	y_train = position_data['Value']
@@ -77,20 +82,22 @@ def knn_manip(inp):
 	regressor.fit(X_train, y_train)
 	nneighbors = position_data.iloc[regressor.kneighbors(df)[1][0], :]
 	nneighbor_id = nneighbors['ID'].tolist()
+
 	nname = adhoc.loc[adhoc['ID'].isin(nneighbor_id), 'Name'].tolist()
 	nid = adhoc.loc[adhoc['ID'].isin(nneighbor_id), 'Photo'].tolist()
 	npos = adhoc.loc[adhoc['ID'].isin(nneighbor_id), 'Position'].tolist()
 
-	# adhoc = adhoc.loc[adhoc['ID'].isin(nneighbor_id),:]
-	# adhoc.to_csv(config.data_loc+'neighbor.csv', index=False)
 	return nname, nid, npos
 
 
-def predict(inp):
+def predict(rf, inp):
+	"""
+
+	:param rf: A random forest model
+	:param inp: A dictionary of player attribute-value pairs
+	:return: Returns the prediction by random forest model
+	"""
 	predict_config = config_text['predict']
-	with open(config.model_loc + predict_config['path_to_tmo'], "rb") as f:
-		rf = pickle.load(f)
-		logger.info("Model loaded")
 	df = pd.DataFrame(inp, index=[0])
 	features_list = predict_config['features_list']
 	features = np.array(df[features_list])

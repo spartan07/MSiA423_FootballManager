@@ -14,13 +14,13 @@ from config import data_loc
 
 def load_data(args):
 	"""
-	Copies raw dataset from public S3 bucket to user-defined bucket and folder
-	:param args: s3 configurations from config.yaml file
+	Copies raw dataset from public S3 bucket to user-defined bucket and folder or local directory
+	:param args: configuration from yaml file and user input to identify type (use s3 or local)
 	:return: None
 	"""
 	if args.type == "s3":
 		config = args.config
-		s3_config = config['load']['s3']
+		s3_config = config['s3']
 		object_name = s3_config['DEST_S3_FOLDER']+"EA_FIFA_19.csv"
 		s3 = boto3.resource('s3')
 		copy_source = {
@@ -36,7 +36,7 @@ def load_data(args):
 	else:
 		config = args.config
 		local_config = config['load']['local']
-		s3_config = config['load']['s3']
+		s3_config = config['s3']
 		s3 = boto3.resource('s3')
 		source_bucket = s3.Bucket(s3_config['PUBLIC_S3'])
 		try:

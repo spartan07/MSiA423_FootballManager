@@ -16,24 +16,24 @@ from config import data_loc
 logger = logging.getLogger(__name__)
 def pre_process(args):
 	"""
-	Reads data from S3. Does pre-processing, feature generation and saves artifacts(clean-data with features and adhoc information)
-	:param args:
-	:return:
+	Reads data from S3-folder or local. Does pre-processing, feature generation and saves
+	artifacts(clean-data with features and adhoc information). These artifacts are used during prediction calls.
+	:param args: configuration from yaml file and user input to identify type (use s3 or local)
+	:return: None
 	"""
 	#
 	config = args.config
 	pre_config = config['pre_process']
-	if args.type =='s3':
-		s3_config = config['load']['s3']
+	if args.type == 's3':
+		s3_config = config['s3']
 		client = boto3.client('s3')
-		obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'],
-								Key=s3_config['DEST_S3_FOLDER']+'EA_FIFA_19.csv')
+		obj = client.get_object(Bucket=s3_config['DEST_S3_BUCKET'], Key=s3_config['DEST_S3_FOLDER']+'EA_FIFA_19.csv')
 		fifa = pd.read_csv(obj['Body'])
 		logger.info("Data Read from S3 bucket")
 	else:
 		local_config = config['load']['local']
 		fifa = pd.read_csv(data_loc+local_config['path'])
-		logger.info("Data Read from ",data_loc+local_config['path'])
+		logger.info("Data Read from %s", data_loc+local_config['path'])
 
 	# Remove symbols and convert to nums for Wage,Value and Release Clause
 	def value_to_int(df_value):
@@ -99,7 +99,7 @@ def pre_process(args):
 		"""
 		Turn Preferred Foot into a binary indicator variable
 		"""
-		if (df['Preferred Foot'] == 'Right'):
+		if df['Preferred Foot'] == 'Right':
 			return 1
 		else:
 			return 0
@@ -113,7 +113,7 @@ def pre_process(args):
 			return 'GK'
 		elif ((df['Position'] == 'RB') | (df['Position'] == 'LB') | (df['Position'] == 'CB') | (
 				df['Position'] == 'LCB') | (df['Position'] == 'RCB') | (df['Position'] == 'RWB') | (
-					  df['Position'] == 'LWB')):
+				      df['Position'] == 'LWB')):
 			return 'DF'
 		elif ((df['Position'] == 'LDM') | (df['Position'] == 'CDM') | (df['Position'] == 'RDM')):
 			return 'DM'
@@ -158,8 +158,8 @@ def pre_process(args):
 	df["WorkRate2"] = tempwork[1]
 
 	df.drop(columns=['LS', 'ST', 'RS', 'LW', 'LF', 'CF', 'RF', 'RW',
-					  'LAM', 'CAM', 'RAM', 'LM', 'LCM', 'CM', 'RCM', 'RM', 'LWB', 'LDM',
-					  'CDM', 'RDM', 'RWB', 'LB', 'LCB', 'CB', 'RCB', 'RB'], inplace=True)
+	                 'LAM', 'CAM', 'RAM', 'LM', 'LCM', 'CM', 'RCM', 'RM', 'LWB', 'LDM',
+	                 'CDM', 'RDM', 'RWB', 'LB', 'LCB', 'CB', 'RCB', 'RB'], inplace=True)
 
 	df.drop(['Work Rate', 'Preferred Foot', 'Real Face','Nationality'], axis=1, inplace=True)
 
@@ -172,17 +172,17 @@ def pre_process(args):
 	df_final = df_final[~df_final['Agility'].isnull()]
 
 	adhoc = df_final[['ID', 'Photo', 'Flag', 'Club Logo', 'Jersey Number', 'Joined', 'Special', 'Loaned From',
-				 'Body Type','Weight', 'Height', 'Contract Valid Until', 'Name', 'Club','Position']]
+	                  'Body Type','Weight', 'Height', 'Contract Valid Until', 'Name', 'Club','Position']]
 
 	#Drop unnecessary columns
 	df_final.drop(
 		columns=['Photo', 'Flag', 'Club Logo', 'Jersey Number', 'Joined', 'Special', 'Loaned From',
-				 'Body Type','Weight', 'Height', 'Contract Valid Until', 'Name', 'Club',
-				 'WorkRate2','Position'], inplace=True)
+		         'Body Type','Weight', 'Height', 'Contract Valid Until', 'Name', 'Club',
+		         'WorkRate2','Position'], inplace=True)
 
 	df_final = pd.get_dummies(df_final)
 	df_final.rename(columns={'WorkRate1_High': 'WorkRate_High',
-							 'WorkRate1_Low': 'WorkRate_Low', 'WorkRate1_Medium': 'WorkRate_Medium'}, inplace=True)
+	                         'WorkRate1_Low': 'WorkRate_Low', 'WorkRate1_Medium': 'WorkRate_Medium'}, inplace=True)
 
 	if args.type =="s3":
 		csv_buffer = StringIO()

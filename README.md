@@ -123,7 +123,8 @@ export MYSQL_PASSWORD=<password>
 ``` 
 After creating this file, please run the following to create the environment variables: 
 ```commandline
-echo source vi ~/.mysqlconfig >> ~/.bash_profile
+echo 'source ~/.mysqlconfig' >> ~/.bashrc
+source ~/.bashrc
 ```
 - Edit the DEST_S3_BUCKET and DEST_S3_FOLDER keys in the config.yml file to match your S3 bucket and folder in the bucket respectively.
 This is where all the intermediate artifacts will be saved.

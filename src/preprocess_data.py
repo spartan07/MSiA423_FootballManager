@@ -14,6 +14,103 @@ sys.path.append(rel_path)
 from config import data_loc
 
 logger = logging.getLogger(__name__)
+
+
+# Remove symbols and convert to nums for Wage,Value and Release Clause
+def value_to_int(df_value):
+	try:
+		value = float(df_value[1:-1])
+		suffix = df_value[-1:]
+
+		if suffix == 'M':
+			value = value * 1000000
+		elif suffix == 'K':
+			value = value * 1000
+	except ValueError:
+		value = 0
+	return value
+
+def check_contract(row):
+	"""
+	Creates new variable num_contract days remaining from contract expiry date information
+	:param row: each row/obheservation of the dataframe
+	:return: updated row with new variable 'contract_days'
+	"""
+	month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+	ref_date = datetime(2018, 5, 31, 0, 0, 0)
+	contract = row['Contract Valid Until']
+	try:
+		match = re.findall('(\w{3}) \d{1,2}, (\d{4})', contract)
+		if len(match) != 0:
+			month_str = match[0][0]
+			month = month_list.index(month_str) + 1
+			year = int(match[0][1])
+			dt = datetime(year, month, 1, 0, 0, 0)
+			a = dt - ref_date
+			row['contract_days'] = a.days
+		else:
+			match = re.findall('(\d{4})', contract)
+			month = month_list.index('Jun') + 1
+			year = int(match[0])
+			dt = datetime(year, month, 1, 0, 0, 0)
+			a = dt - ref_date
+			row['contract_days'] = a.days
+		return row
+	except:
+		year = 2020
+		month = month_list.index('Jun')
+		dt = datetime(year, month, 1, 0, 0, 0)
+		a = dt - ref_date
+		row['contract_days'] = a.days
+		return row
+
+
+def right_footed(df):
+	"""
+	Turn Preferred Foot into a binary indicator variable
+	"""
+	if df['Preferred Foot'] == 'Right':
+		return 1
+	else:
+		return 0
+
+def simple_position(df):
+	"""
+	Create a simplified position varaible to account for all player positions
+	"""
+	if (df['Position'] == 'GK'):
+		return 'GK'
+	elif ((df['Position'] == 'RB') | (df['Position'] == 'LB') | (df['Position'] == 'CB') | (
+			df['Position'] == 'LCB') | (df['Position'] == 'RCB') | (df['Position'] == 'RWB') | (
+			      df['Position'] == 'LWB')):
+		return 'DF'
+	elif ((df['Position'] == 'LDM') | (df['Position'] == 'CDM') | (df['Position'] == 'RDM')):
+		return 'DM'
+	elif ((df['Position'] == 'LM') | (df['Position'] == 'LCM') | (df['Position'] == 'CM') | (
+			df['Position'] == 'RCM') | (df['Position'] == 'RM')):
+		return 'MF'
+	elif ((df['Position'] == 'LAM') | (df['Position'] == 'CAM') | (df['Position'] == 'RAM') | (
+			df['Position'] == 'LW') | (df['Position'] == 'RW')):
+		return 'AM'
+	elif ((df['Position'] == 'RS') | (df['Position'] == 'ST') | (df['Position'] == 'LS') | (
+			df['Position'] == 'CF') | (df['Position'] == 'LF') | (df['Position'] == 'RF')):
+		return 'ST'
+	else:
+		return df.Position
+
+
+def major_nation(df):
+	"""
+	Replace Nationality with a binary indicator variable for 'Major Nation'
+	"""
+	nat_counts = df['Nationality'].value_counts()
+	nat_list = nat_counts[nat_counts > 250].index.tolist()
+
+	df.Nationality = [1 if x in nat_list else 0 for x in df['Nationality']]
+	return df
+
+
+
 def pre_process(args):
 	"""
 	Reads data from S3-folder or local. Does pre-processing, feature generation and saves
@@ -35,20 +132,6 @@ def pre_process(args):
 		fifa = pd.read_csv(data_loc+local_config['path'])
 		logger.info("Data Read from %s", data_loc+local_config['path'])
 
-	# Remove symbols and convert to nums for Wage,Value and Release Clause
-	def value_to_int(df_value):
-		try:
-			value = float(df_value[1:-1])
-			suffix = df_value[-1:]
-
-			if suffix == 'M':
-				value = value * 1000000
-			elif suffix == 'K':
-				value = value * 1000
-		except ValueError:
-			value = 0
-		return value
-
 	fifa['Value'] = fifa['Value'].apply(value_to_int)
 	fifa['Wage'] = fifa['Wage'].apply(value_to_int)
 
@@ -56,98 +139,24 @@ def pre_process(args):
 	fifa['Release Clause'] = fifa['Release Clause'].apply(value_to_int)
 
 	fifa.loc[fifa['Release Clause'] == 0, 'Release Clause'] = fifa[fifa['Release Clause'] > 0]['Release Clause'].mean()
-
 	logger.info("Value to Int transformation done")
-	def check_contract(row):
-		"""
-		Creates new variable num_contract days remaining from contract expiry date information
-		:param row: each row/obheservation of the dataframe
-		:return: updated row with new variable 'contract_days'
-		"""
-		month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-		ref_date = datetime(2018, 5, 31, 0, 0, 0)
-		contract = row['Contract Valid Until']
-		try:
-			match = re.findall('(\w{3}) \d{1,2}, (\d{4})', contract)
-			if len(match) != 0:
-				month_str = match[0][0]
-				month = month_list.index(month_str) + 1
-				year = int(match[0][1])
-				dt = datetime(year, month, 1, 0, 0, 0)
-				a = dt - ref_date
-				row['contract_days'] = a.days
-			else:
-				match = re.findall('(\d{4})', contract)
-				month = month_list.index('Jun') + 1
-				year = int(match[0])
-				dt = datetime(year, month, 1, 0, 0, 0)
-				a = dt - ref_date
-				row['contract_days'] = a.days
-			return row
-		except:
-			year = 2020
-			month = month_list.index('Jun')
-			dt = datetime(year, month, 1, 0, 0, 0)
-			a = dt - ref_date
-			row['contract_days'] = a.days
-			return row
 
 	fifa = fifa.apply(check_contract,axis=1)
 	logger.info("Contract days variable created")
 
-	def right_footed(df):
-		"""
-		Turn Preferred Foot into a binary indicator variable
-		"""
-		if df['Preferred Foot'] == 'Right':
-			return 1
-		else:
-			return 0
-	#
-	#
-	def simple_position(df):
-		"""
-		Create a simplified position varaible to account for all player positions
-		"""
-		if (df['Position'] == 'GK'):
-			return 'GK'
-		elif ((df['Position'] == 'RB') | (df['Position'] == 'LB') | (df['Position'] == 'CB') | (
-				df['Position'] == 'LCB') | (df['Position'] == 'RCB') | (df['Position'] == 'RWB') | (
-				      df['Position'] == 'LWB')):
-			return 'DF'
-		elif ((df['Position'] == 'LDM') | (df['Position'] == 'CDM') | (df['Position'] == 'RDM')):
-			return 'DM'
-		elif ((df['Position'] == 'LM') | (df['Position'] == 'LCM') | (df['Position'] == 'CM') | (
-				df['Position'] == 'RCM') | (df['Position'] == 'RM')):
-			return 'MF'
-		elif ((df['Position'] == 'LAM') | (df['Position'] == 'CAM') | (df['Position'] == 'RAM') | (
-				df['Position'] == 'LW') | (df['Position'] == 'RW')):
-			return 'AM'
-		elif ((df['Position'] == 'RS') | (df['Position'] == 'ST') | (df['Position'] == 'LS') | (
-				df['Position'] == 'CF') | (df['Position'] == 'LF') | (df['Position'] == 'RF')):
-			return 'ST'
-		else:
-			return df.Position
-	#
-	#
+
 	nat_counts = fifa['Nationality'].value_counts()
 	nat_list = nat_counts[nat_counts > 250].index.tolist()
-	def major_nation(df):
-		"""
-		Replace Nationality with a binary indicator variable for 'Major Nation'
-		"""
-		if df.Nationality in nat_list:
-			return 1
-		else:
-			return 0
 
 	# Create a copy of the original dataframe to avoid indexing errors
 	df = fifa.copy()
 
+
 	# Apply changes to dataset to create new column
 	df['Right_Foot'] = df.apply(right_footed, axis=1)
 	df['Simple_Position'] = df.apply(simple_position, axis=1)
-	df['Major_Nation'] = df.apply(major_nation, axis=1)
+	#df['Major_Nation'] = df.apply(major_nation, axis=1)
+	df = major_nation(df)
 
 
 	# Split the Work Rate Column in two

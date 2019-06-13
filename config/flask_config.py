@@ -8,8 +8,8 @@ APP_NAME = "football-manager"
 PORT = 3000
 HOST = "127.0.0.1"
 
-USE_S3 = True
-USE_RDS = True
+USE_S3 = False
+USE_RDS = False
 DATABASE_NAME = 'msia423'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_ECHO = False

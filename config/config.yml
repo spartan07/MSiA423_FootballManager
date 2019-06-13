@@ -8,6 +8,7 @@ s3:
 load:
   local:
     path: EA_FIFA19.csv
+
 #RDS configurations
 rds:
   type: mysql+pymysql

@@ -88,6 +88,7 @@ Provide estimated market value of a football player based on the required player
 
 1. Application.AdvancedFrontEnd
 
+
 ##Running the Application
 
 **Setup environment** :
@@ -110,11 +111,11 @@ make sure ~/.aws/config and ~/.aws/credentials exist.
 
 The pipeline can be reproduced either locally by saving the artifacts and creating a sqlite or using AWS services by creating all the artifacts in an S3 bucket and using RDS.
 
-Please ensure the following configurations are changed in the yml file and flask_config if choosing the AWS option.
+If choosing the *AWS* option, please ensure the following configurations are changed in the yml file and flask_config.
 
 - set the username and password for RDS as environment variables.
 
-If data needs to be pushed to RDS please create a .mysqlconfig files as follows:
+If an RDS database is used, please create a .mysqlconfig files as follows:
 
 ```commandline
 export MYSQL_USER=<username>
@@ -129,10 +130,10 @@ This is where all the intermediate artifacts will be saved.
 - Edit rds configurations (port,host,dbname) in the config.yml file to match your RDS configurations.
 - Change the variables USE_S3 & USE_RDS values to True in flask_config.py
 
+If running locally, the default configurations are provided in the config/config.yml file. 
+The directory locations to data, models and test folders are defined in the config.py file
 
-
-
-**Loading data to S3**
+**Loading data from S3**
 
 Load data from a public s3 bucket(default) to s3bucket or locally
 From the root directory run
@@ -205,16 +206,22 @@ Add ':<PORT>' to your public IP of EC2 instance to view the app in browser.
 
 **Reproduce using makefiles**
 
-To sequentially run the steps of the pipeline and launch the app by creating 
-a database and saving the files locally run
+To sequentially run the steps of the pipeline and launch the app, the following three options are provided
 
+- To use a local sqldb and save all the artifacts locally 
 ```commandline
-make all_local
+make all_sql type=local
 ```
- 
-To sequentially run the steps of the pipeline and launch the app by using 
-a rds database and saving the files on S3 run
 
+- To use a local sqldb and save all the artifacts on S3
+```commandline
+make all_sql type=s3
+``` 
+
+- To use an rds db and save all the artifacts on s3
 ```commandline
 make all_aws type=s3
-```
+``` 
+
+Refer to the configurations section for the changes to be made when using S3 or RDS,
+ and hosting app on EC2. 

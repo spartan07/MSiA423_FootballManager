@@ -225,3 +225,10 @@ make all_aws type=s3
 
 Refer to the configurations section for the changes to be made when using S3 or RDS,
  and hosting app on EC2. 
+ 
+ **Unit tests**
+ 
+ To run unit test from the root directory run
+ ```commandline
+pytest
+```

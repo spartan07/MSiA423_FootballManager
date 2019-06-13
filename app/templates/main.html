@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<style>
+form {
+    margin: auto;
+    width: 35%;
+}
+.result {
+    margin: auto;
+    width: 35%;
+    border: 1px solid #ccc;
+}
+</style>
+<head>
+    <title>Football Manager</title>
+</head>
+<form action="{{ url_for('main') }}" method="POST">
+    <fieldset>
+        <legend>Input values:</legend>
+        Reactions:
+        <input name="Reactions" type="number" required>
+        <br>
+        <br> Potential:
+        <input name="Potential" type="number" required>
+        <br>
+        <br> Age:
+        <input name="Age" type="number" required>
+        <br>
+        <br> BallControl:
+        <input name="BallControl" type="number" required>
+        <br>
+        <br> StandingTackle:
+        <input name="StandingTackle" type="number" required>
+        <br>
+        <br> Composure:
+        <input name="Composure" type="number" required>
+        <br>
+        <br> Dribbling:
+        <input name="Dribbling" type="number" required>
+        <br>
+        <br> Positioning:
+        <input name="Positioning" type="number" required>
+        <br>
+        <br> Finishing:
+        <input name="Finishing" type="number" required>
+        <br>
+        <br> GKReflexes:
+        <input name="GKReflexes" type="number" required>
+        <br>
+         <br> Position:
+        <input name="Position" type="text" required>
+        <br>
+
+        <br>
+        <input type="submit">
+    </fieldset>
+</form>
+<br>
+<div class="result" align="center">
+    {% if result %}
+        {% for variable, value in original_input.items() %}
+            <b>{{ variable }}</b> : {{ value }}
+        {% endfor %}
+        <br>
+        <br> Predicted value of Player:
+           <p style="font-size:50px">{{ result }}</p>
+    {% endif %}
+</div>
+<div class="knn_out" align="center">
+    {% if knn_out %}
+        <br> Similiar Players:
+        {% for value in knn_out %}
+            <p>{{ value }}</p>
+        {% endfor %}
+        <br>
+    {% endif %}
+</div>
+</html>

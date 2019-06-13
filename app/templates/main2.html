@@ -1,0 +1,217 @@
+<!doctype html>
+<html>
+
+<style>
+form {
+    margin-left: 100px;
+    margin-right: 100px;
+    width: 35%;
+}
+.result {
+    margin: auto;
+    width: 35%;
+    border: 1px solid #ccc;
+}
+
+.slidecontainer {
+  width: 60%;
+   /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 60%; /* Full-width */
+  height: 25px; /* Specified height */
+  background: #d3d3d3; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+  float: center;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */ 
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #000000	; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #4CAF50; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+body {
+  padding-top: 5rem;
+    background-image: url("https://www.esportsbets.com/wp-content/uploads/2018/03/shutterstock_418266109-1.jpg");
+    background-size: 100% 100%;
+     background-image: linear-gradient(0deg, rgba(255, 255, 255, 1.0), 50%, rgba(255, 255, 255, 0.0)),
+     url('https://www.esportsbets.com/wp-content/uploads/2018/03/shutterstock_418266109-1.jpg');;
+}
+
+.starter-template {
+  padding: 1rem 1.5rem;
+  {#text-align: center;#}
+    margin-right: auto;
+}
+
+</style>
+<head>
+<link href="../static/css/bootstrap.min.css" rel="stylesheet">
+<script src="../static/js/bootstrap.min.js"></script>
+
+    <title>Football Manager</title>
+    
+<script>
+
+var slider = new Slider("#myRange2");
+slider.on("slide", function(sliderValue) {
+	document.getElementById("ex6SliderVal").textContent = sliderValue;
+});
+</script>
+
+</head>
+
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="/">Football Manager 2019</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse"  data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="https://sofifa.com/">Dataset <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="https://store.playstation.com/en-us/product/UP0006-CUSA11599_00-FIFAFOOTBALL2019">FIFA-19 <span class="sr-only">(current)</span></a>
+          </li>
+          
+        </ul>
+{#        <form class="form-inline my-2 my-lg-0" action="https://www.google.com/" method = "get">#}
+{#          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">#}
+{#          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>#}
+{#        </form>#}
+      </div>
+    </nav>
+    
+  <main role="main" class="container">
+
+      <div class="starter-template" >
+        <h1>Predict Market Value</h1>
+          <p class="lead">Use this form to fill your player's attributes and find their value <br/>
+              in today's market</p>
+      </div>
+
+    </main><!-- /.container -->
+
+
+{#<p>#}
+{#        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5VPgeQ3ZBSuF06QlmibiMClunRkQJDAD3hurnlVfl_MJUXn_O"#}
+{#             alt="CR7" style="float:left;margin:0 20px 20px 0;width:333px;height:400px;">#}
+{#        <img src="https://media3.giphy.com/media/XS3AwCGCO3zvG/giphy.gif?cid=790b76115cfd738a6f3350696fd4dd55&rid=giphy.gif"#}
+{#             alt="Dwight Schrute" style="float:right;margin:0 0px 0px 0;width:333px;height:400px;">#}
+{#</p>#}
+
+<form action="/results" method="POST" align="left">
+    <fieldset>
+      <div class="form-row align-items-center">
+           Position: <select class="custom-select my-1 mb-2 mr-sm-2" name = "Position" required>
+          <option selected value = "ST" >Select Position- Eg: ST, CAM, CB, GK</option>
+            <option value = 'CAM'>CAM</option>
+            <option value = 'CB'>CB</option>
+            <option value = 'CDM'>CDM</option>
+            <option value = 'CF'>CF</option>
+            <option value = 'CM'>CM</option>
+            <option value = 'GK'>GK</option>
+            <option value = 'LAM'>LAM</option>
+            <option value = 'LB'>LB</option>
+            <option value = 'LCB'>LCB</option>
+            <option value = 'LCM'>LCM</option>
+            <option value = 'LDM'>LDM</option>
+            <option value = 'LF'>LF</option>
+            <option value = 'LM'>LM</option>
+            <option value = 'LS'>LS</option>
+            <option value = 'LW'>LW</option>
+            <option value = 'LWB'>LWB</option>
+            <option value = 'RAM'>RAM</option>
+            <option value = 'RB'>RB</option>
+            <option value = 'RCB'>RCB</option>
+            <option value = 'RCM'>RCM</option>
+            <option value = 'RDM'>RDM</option>
+            <option value = 'RF'>RF</option>
+            <option value = 'RM'>RM</option>
+            <option value = 'RS'>RS</option>
+            <option value = 'RW'>RW</option>
+            <option value = 'RWB'>RWB</option>
+            <option value = 'ST'>ST</option>
+        </select>
+ </div>
+ <br>
+
+ <br>
+        Reactions:
+        <input type="range" min="1" max="100" value="50" title = "Reactions" class="slider" name = "Reactions" oninput="Reactions2.value = Reactions.value">
+        <output id="Reactions2" class = "font-weight-bold">50</output>
+        <br>
+        <br> Potential:
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" name = "Potential" oninput="Potential2.value = Potential.value">
+        <output id="Potential2" class = "font-weight-bold">50</output>
+        <br>
+        <br> Age:
+        <input type="range" min="16" max="50" value="31" class="slider" id="myRange" name = "Age" oninput="Age2.value = Age.value">
+        <output id="Age2"class = "font-weight-bold"> 31    </output>
+        <br>
+        <br> BallControl:
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" name = "BallControl" oninput="BC2.value = BallControl.value">
+        <output id="BC2"class = "font-weight-bold">50</output>
+        <br>
+        <br> StandingTackle:
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" name = "StandingTackle" oninput="ST2.value = StandingTackle.value">
+        <output id="ST2"class = "font-weight-bold">50</output>
+        <br>
+        <br> Composure:
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" name = "Composure" oninput="C2.value = Composure.value">
+        <output id="C2"class = "font-weight-bold">50</output>
+        <br>
+        <br> Dribbling:
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" name = "Dribbling" oninput="D2.value = Dribbling.value">
+        <output id="D2" class = "font-weight-bold">50</output>
+        <br>
+        <br> Positioning:
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" name = "Positioning" oninput="P2.value = Positioning.value">
+        <output id="P2" class = "font-weight-bold">50</output>
+        <br>
+        <br> Finishing:
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" name = "Finishing" oninput="F2.value = Finishing.value">
+        <output id="F2" class = "font-weight-bold">50</output>
+        <br>
+        <br> GKReflexes:
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" name = "GKReflexes" oninput="G2.value = GKReflexes.value">
+        <output id="G2" class = "font-weight-bold">50</output>
+        
+        <br>
+        <br>
+        <input type="submit" class="btn btn-secondary btn-lg btn-block">
+    </fieldset>
+</form>
+<br>
+
+
+</body>
+
+</html>

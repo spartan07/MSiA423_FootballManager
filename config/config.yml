@@ -1,13 +1,96 @@
+#s3 oonfigurations
 s3:
   PUBLIC_S3: avc-arpan-public
   PATH: Data/EA_FIFA19.csv
   DEST_S3_BUCKET: nw-arpanvgopal-s3
-  DEST_S3_FOLDER: raw_data
+  DEST_S3_FOLDER: data_folder/
+
+load:
+  local:
+    path: EA_FIFA19.csv
+
+#RDS configurations
 rds:
   type: mysql+pymysql
   host: mysql-nw-db.cwnmh4e1h3t5.us-east-2.rds.amazonaws.com
   port: 3306
   dbname: msia423
+
 sqldb:
   path: data/msia423.db
+
+pre_process:
+  adhoc: adhoc.csv
+  processed: processed_fifa.csv
+model:
+  inp_data: processed_fifa.csv
+  method:
+    name: rforest
+    n_estimators: 100
+    random_state: 42
+  target: Value
+  features_list:
+    - Reactions
+    - Potential
+    - Age
+    - BallControl
+    - StandingTackle
+    - Composure
+    - Dribbling
+    - Positioning
+    - Finishing
+    - GKReflexes
+  split_data:
+    train_size: 0.75
+    test_size: 0.25
+    random_state: 20
+  save_tmo: prediction.pkl
+  outp_test:
+    feature: X_test.npy
+    target: y_test.npy
+
+score_model:
+  inp_name:
+    feature: X_test.npy
+    target: y_test.npy
+  path_to_tmo: prediction.pkl
+  save_scores: test_scores.txt
+
+predict:
+  path_to_tmo: prediction.pkl
+  features_list:
+    - Reactions
+    - Potential
+    - Age
+    - BallControl
+    - StandingTackle
+    - Composure
+    - Dribbling
+    - Positioning
+    - Finishing
+    - GKReflexes
+  pos_list:
+      - Simple_Position_AM
+      - Simple_Position_DF
+      - Simple_Position_DM
+      - Simple_Position_GK
+      - Simple_Position_MF
+      - Simple_Position_ST
+
+app:
+  input_list:
+    - Reactions
+    - Potential
+    - Age
+    - BallControl
+    - StandingTackle
+    - Composure
+    - Dribbling
+    - Positioning
+    - Finishing
+    - GKReflexes
+    - Position
+  neighbors: 5
+
+
 

@@ -151,7 +151,7 @@ def test_predict():
     except FileNotFoundError as e:
         logger.error(e)
     val = predict(rf, inp)
-    assert round(val,0) == 86554432.0
+    assert round(val/1000000,-1) == 90
 
 
 def test_knn():

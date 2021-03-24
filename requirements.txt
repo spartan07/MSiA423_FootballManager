@@ -67,7 +67,7 @@ pywinpty==0.5.5
 PyYAML==3.13
 pyzmq==18.0.0
 qtconsole==4.4.4
-rsa==3.4.2
+rsa==4.1
 s3transfer==0.2.0
 scikit-learn==0.20.3
 scipy==1.2.1

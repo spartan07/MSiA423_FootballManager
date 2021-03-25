@@ -64,7 +64,7 @@ pytest==4.6.3
 python-dateutil==2.8.0
 pytz==2019.1
 pywinpty==0.5.5
-PyYAML==3.13
+PyYAML==5.4
 pyzmq==18.0.0
 qtconsole==4.4.4
 rsa==3.4.2
